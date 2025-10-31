@@ -31,7 +31,6 @@ class _ApiSettings:
 class AlApiClient:
     def __init__(self, alacctoken: str, debug=False):
         self.base_url = "https://autolook.al"
-        # self.base_url = "http://localhost:3051"
         self.alacctoken = alacctoken
         self.session: aiohttp.ClientSession | None = None
         self.closed = True
@@ -105,15 +104,16 @@ class AlApiClient:
         ```
         """
         data.set_alacctoken_opt(self.alacctoken)
-        req = data.to_dict()
+        payload_dict = data.to_dict()
+        payload_string = json.dumps(payload_dict, separators=(',', ':')).encode("utf-8")
         if self.debug:
-            l().debug(f"{COLORS.CYAN}SEND api/{api_endpoint.path}: {req}{COLORS.RESET}")
-        return await self._call(api_endpoint.path, req, api_endpoint.response_type)
+            l().debug(f"{COLORS.CYAN}SEND api/{api_endpoint.path}: {payload_string.decode('utf-8')}{COLORS.RESET}")
+        return await self._call(api_endpoint.path, payload_string, api_endpoint.response_type)
 
     async def _call(
         self,
         endpoint: str,
-        data: Dict[str, Any] | None = None,
+        data: Dict[str, Any] | str | None = None,
         api_resp_type: Type[API_RESP_TYPE] = ApiRespCheck,
     ) -> API_RESP_TYPE:
         if self.closed:
@@ -124,10 +124,11 @@ class AlApiClient:
 
         endpoint = endpoint.lstrip("/")
         url = f"{self.base_url}/api/{endpoint}"
-        
-        payload = json.dumps(data, separators=(',', ':')).encode("utf-8")
-        if self.debug:
-            l().debug(f"Actual data getting sent: '{payload}'")
+
+        if type(data) == dict:
+            payload = json.dumps(data, separators=(',', ':')).encode("utf-8")
+        else:
+            payload = data
 
         for attempt in range(self.max_retries):
             try:
@@ -136,6 +137,9 @@ class AlApiClient:
                         raise InternalApiError(
                             f"Status is {response.status}, err: {await response.text()}"
                         )
+                        
+                    if self.debug:
+                        l().debug(f"{COLORS.MAGENTA}RECV api/{endpoint}: {await response.text()}{COLORS.RESET}")
 
                     try:
                         result = await response.json()
@@ -151,8 +155,6 @@ class AlApiClient:
                         raise InternalApiError(
                             f"Response is not expected schema, status: {response.status}, text: {await response.text()}"
                         )
-                    if self.debug:
-                        l().debug(f"{COLORS.MAGENTA}RECV api/{endpoint}: {res}{COLORS.RESET}")
 
                     # if not response.ok:
                     #     raise InternalApiError(
