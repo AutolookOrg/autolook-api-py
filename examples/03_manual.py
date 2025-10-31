@@ -30,7 +30,7 @@ async def main():
         
         email = await alcli.buy_email("outlook.com")
         
-        l().info(f"Waiting till email: '{email}' receives a new mail")
+        l().info(f"Waiting till email: '{email}' receives a new mail (timeout 600 seconds)")
         
         time_start = time.perf_counter()
         new_mails = await alcli.get_new_mails_loop(email, timeout_secs=600)
@@ -42,7 +42,8 @@ async def main():
         locked_mails = [mail for mail in new_mails if not mail.unlocked]
         if len(locked_mails) > 0:
             l().debug(f"Unlocking mails: {len(locked_mails)}")
-            unlocked_mails = await alcli.unlock_mails(email, [mail.almailid for mail in locked_mails], True)
+            unlock_mails = [mail.almailid for mail in locked_mails]
+            unlocked_mails = await alcli.unlock_mails(email, unlock_mails, no_body_raw=True, parse_links=True)
             l().info(f"Unlocked mails: {time.perf_counter() - time_start_unlocking} seconds, unlocked mails: {len(unlocked_mails)}")
             for mail in unlocked_mails:
                 l().debug("- Mail UNLOCKED: %s", mail.__str__())

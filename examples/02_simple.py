@@ -33,10 +33,10 @@ async def main():
         
         email = await alcli.buy_email("outlook.com")
         
-        l().info(f"Waiting till email: '{email}' receives a new mail")
+        l().info(f"Waiting till email: '{email}' receives a new mail (timeout 600 seconds)")
         
         time_start = time.perf_counter()
-        new_mails = await alcli.get_new_mails_loop(email, timeout_secs=600)
+        new_mails = await alcli.get_new_mails_loop(email, timeout_secs=600, autobuy_locked=True, parse_links=True)
         l().info(f"New mails after: {time.perf_counter() - time_start} seconds, found mails: {len(new_mails)}")
         for mail in new_mails:
             l().debug("- Mail: %s", mail.__str__())

@@ -242,7 +242,8 @@ class AlApiClient:
         refresh_mails: Optional[GetMailsRefreshMails] = GetMailsRefreshMails.default(),
         almailid_offset: Optional[str] = None,
         autobuy_locked: bool = False,
-        only_text: bool = False,
+        no_body_raw: bool = False,
+        parse_links: bool = False,
     ) -> list[Mail]:
         if limit is None:
             limit = self.api_settings.default_get_mails_limit
@@ -253,17 +254,19 @@ class AlApiClient:
             filter=filter,
             refresh_mails=refresh_mails,
             autobuy_locked=autobuy_locked,
-            only_text=only_text,
+            no_body_raw=no_body_raw,
+            parse_links=parse_links,
         ))
         return res.mails
 
     async def get_new_mails_loop(
         self,
         email: str,
+        timeout_secs: Optional[float] = None,
         limit: int = None,
         autobuy_locked: bool = False,
-        only_text: bool = False,
-        timeout_secs: Optional[float] = None,
+        no_body_raw: bool = False,
+        parse_links: bool = False,
     ) -> list[Mail]:
         """
             Tries to get new - never received before - mails
@@ -293,7 +296,8 @@ class AlApiClient:
                     filter=GetMailsFilter.ONLY_NEW,
                     refresh_mails=GetMailsRefreshMails.REFRESH,
                     autobuy_locked=autobuy_locked,
-                    only_text=only_text,
+                    no_body_raw=no_body_raw,
+                    parse_links=parse_links,
                 ))
                 if len(res.mails) > 0:
                     return res.mails
@@ -305,8 +309,15 @@ class AlApiClient:
         self,
         email: str,
         almailids: list[str],
-        only_text = False,
+        no_body_raw: bool = False,
+        parse_links: bool = False,
     ) -> list[Mail]:
         expected_price = None
-        res = await self.call(UNLOCK_MAILS, UnlockMailsI(email, almailids, expected_price, only_text))
+        res = await self.call(UNLOCK_MAILS, UnlockMailsI(
+            email=email,
+            almailids=almailids,
+            expected_price=expected_price,
+            no_body_raw=no_body_raw,
+            parse_links=parse_links,
+        ))
         return res.unlocked_mails

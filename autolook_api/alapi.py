@@ -192,6 +192,7 @@ class Mail:
     body_raw: Optional[str] = None
     body_text: Optional[str] = None
     body_is_partial: bool = False
+    links: Optional[dict[str, str]] = None
     
     def __str__(self) -> str:
         lines = []
@@ -220,19 +221,24 @@ class Mail:
             f"<{Fore.MAGENTA}{self.sender_email}{Style.RESET_ALL}>"
         )
         
-        lines.append(f"- Body Preview: {self.body_preview}")
         lines.append(f"- Body Type: {self.body_type}")
         
         if self.body_text:
             body_len = len(self.body_text)
-            lines.append(f"- Body: {body_len} chars{' (partial)' if self.body_is_partial else ''}")
+            lines.append(f"- Body (text): {body_len} chars{' (partial)' if self.body_is_partial else ''}")
             lines.append(self.body_text)
         elif self.body_raw:
             body_len = len(self.body_raw)
             lines.append(f"- Body (raw): {body_len} chars{' (partial)' if self.body_is_partial else ''}")
             lines.append(self.body_raw)
         else:
-            lines.append("- Body: (no body content available)")
+            lines.append(f"- Body (preview): {self.body_preview}")
+            
+        if self.links:
+            lines.append(f"- Links: {len(self.links)}")
+            for link_name in self.links:
+                link_url = self.links[link_name]
+                lines.append(f"  - {link_name}: {link_url}")
         
         return "\n".join(lines)
     
@@ -250,7 +256,8 @@ class GetMailsI(ApiReqAuthed):
     filter: GetMailsFilter = field(default_factory=GetMailsFilter.default)
     refresh_mails: GetMailsRefreshMails = field(default_factory=GetMailsRefreshMails.default)
     autobuy_locked: bool = False
-    only_text: bool = False
+    no_body_raw: bool = False
+    parse_links: bool = False
 @dataclass
 class GetMailsO(ApiResp):
     mails: list[Mail]
@@ -264,6 +271,7 @@ class UnlockMailsI(ApiReqAuthed):
     almailids: list[str]
     expected_price: Optional[float] = None
     only_text: bool = False
+    parse_links: bool = False
 @dataclass
 class UnlockMailsO(ApiResp):
     actual_cost: float
