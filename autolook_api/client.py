@@ -105,10 +105,14 @@ class AlApiClient:
         """
         data.set_alacctoken_opt(self.alacctoken)
         payload_dict = data.to_dict()
-        payload_string = json.dumps(payload_dict, separators=(',', ':')).encode("utf-8")
+        payload_bytes = json.dumps(payload_dict, separators=(',', ':')).encode("utf-8")
         if self.debug:
-            l().debug(f"{COLORS.CYAN}SEND api/{api_endpoint.path}: {payload_string.decode('utf-8')}{COLORS.RESET}")
-        return await self._call(api_endpoint.path, payload_string, api_endpoint.response_type)
+            try:
+                payload_display = payload_bytes.decode('utf-8')
+            except UnicodeDecodeError:
+                payload_display = payload_bytes
+            l().debug(f"{COLORS.CYAN}SEND api/{api_endpoint.path}: {payload_display}{COLORS.RESET}")
+        return await self._call(api_endpoint.path, payload_bytes, api_endpoint.response_type)
 
     async def _call(
         self,
