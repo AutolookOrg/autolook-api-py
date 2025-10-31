@@ -84,7 +84,7 @@ class AlApiClient:
             await self.session.close()
         self.closed = True
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "AlApiClient":
         await self.start()
         return self
 
@@ -107,10 +107,7 @@ class AlApiClient:
         payload_dict = data.to_dict()
         payload_bytes = json.dumps(payload_dict, separators=(',', ':')).encode("utf-8")
         if self.debug:
-            try:
-                payload_display = payload_bytes.decode('utf-8')
-            except UnicodeDecodeError:
-                payload_display = payload_bytes
+            payload_display = payload_bytes.decode("utf-8", errors="backslashreplace")
             l().debug(f"{COLORS.CYAN}SEND api/{api_endpoint.path}: {payload_display}{COLORS.RESET}")
         return await self._call(api_endpoint.path, payload_bytes, api_endpoint.response_type)
 
@@ -143,7 +140,8 @@ class AlApiClient:
                         )
                         
                     if self.debug:
-                        l().debug(f"{COLORS.MAGENTA}RECV api/{endpoint}: {await response.text()}{COLORS.RESET}")
+                        response_display = await response.text(errors="backslashreplace")
+                        l().debug(f"{COLORS.MAGENTA}RECV api/{endpoint}: {response_display}{COLORS.RESET}")
 
                     try:
                         result = await response.json()
