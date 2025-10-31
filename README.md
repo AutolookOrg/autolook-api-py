@@ -1,6 +1,8 @@
 # Autolook API Client
-The official API wrapper for Python of the https://autolook.al API.
-The API documentation can be found at https://autolook.al/api
+- The official API wrapper for Python of the https://autolook.al API.
+- The API documentation can be found at https://autolook.al/api
+- The Package is also uploaded to GitHub: https://github.com/AutolookOrg/autolook-api-py
+- The Repo is also uploaded to PyPi: https://pypi.org/project/autolook-api
 
 ## Quickstart
 First you want to install the library: (skip this step if you have locally cloned this library)
