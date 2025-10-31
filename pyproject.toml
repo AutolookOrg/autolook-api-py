@@ -11,9 +11,19 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "aiohttp",
+    "typing-extensions",
+    "backports.zstd",
+    "Brotli",
+    "colorlog",
+    "colorama",
+    "python-dotenv",
+]
 
 [project.urls]
 Homepage = "https://autolook.al"
+GitHub = "https://github.com/AutolookOrg/autolook-api-py"
 
 [build-system]
 requires = ["hatchling >= 1.26"]
