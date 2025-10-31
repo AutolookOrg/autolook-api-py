@@ -1,6 +1,6 @@
 [project]
 name = "autolook_api"
-version = "0.1.0"
+version = "0.1.2"
 authors = [
   { name="Autolook", email="autolook.al@proton.me" },
 ]
@@ -12,13 +12,13 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "aiohttp",
-    "typing-extensions",
-    "backports.zstd",
-    "Brotli",
-    "colorlog",
-    "colorama",
-    "python-dotenv",
+    "aiohttp>=3",
+    "typing-extensions>=4",
+    "backports.zstd>=1",
+    "Brotli>=1",
+    "colorlog>=6",
+    "colorama>=0.4",
+    "python-dotenv>=1",
 ]
 
 [project.urls]
