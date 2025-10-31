@@ -1,0 +1,9 @@
+aiohttp
+typing-extensions
+backports.zstd
+Brotli
+colorlog
+colorama
+
+setuptools
+python-dotenv

@@ -1,0 +1,20 @@
+[project]
+name = "autolook_api"
+version = "0.1.0"
+authors = [
+  { name="Autolook", email="autolook.al@proton.me" },
+]
+description = "Official API wrapper client for the autolook.al service"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://autolook.al"
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
